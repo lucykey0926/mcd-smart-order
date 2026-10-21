@@ -1,0 +1,9 @@
+name: maimai-kids-order
+display_name: 麦麦遛娃点餐师
+version: 1.0.0
+triggers:
+  - "/遛娃点餐"
+  - "/带娃吃麦"
+  - "/家庭点餐"
+entry: prompts/main.md
+runtime: workbuddy-skill
