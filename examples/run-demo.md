@@ -32,10 +32,11 @@
 | 4 | query-meal-detail | code=开心乐园餐 | rounds 3 轮：主食(麦香鸡) / 小食(**苹果片默认**，可换薯条) / 饮料(**牛奶**、雪碧、纯净水可选) → 确认可换牛奶、苹果片默认 |
 | 5 | query-store-coupons | storeCode=1400886 | 满60减8、满30减5（示例券） |
 | 6 | query-my-coupons | — | 券包为空 → 全部按门店券计算 |
-| 7 | campaign-calendar | — | 乐园餐当期玩具：小汽车款（示例档期，以门店实际为准） |
-| 8 | query-promotions | storeCode=1400886 | 周末无叠加促销（示例） |
-| 9 | calculate-price | 三套方案组合逐一试算 | 实付价见下表（命中满60减8） |
-| 10 | list-nutrition-foods | — | 营养参考值（仅标注用，"参考值"口径） |
+| 7 | campaign-calendar | — | 综合营销活动（示例）；不作为玩具档期依据，玩具以第4步餐品详情为准 |
+| 8 | calculate-price | 三套方案组合逐一试算 | 实付价见下表（模拟命中满60减8） |
+| 9 | list-nutrition-foods | — | 营养参考值（仅标注用，"参考值"口径） |
+
+> `query-promotions` 仅限企业团餐 `beType=6`，不属于本家庭到店自取流程。
 
 > 以上工具名均为 mcp.mcd.cn 官方真实工具（对齐记录见 MCP_INTEGRATION.md）。
 
