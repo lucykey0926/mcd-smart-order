@@ -68,6 +68,14 @@ def enumerate_schemes(menu: List[MenuItem], coupons: List[Coupon], ctx: FamilyCt
     if ctx.no_spicy:
         mains = [m for m in mains if "辣" not in m.name and "spicy" not in m.tags]
 
+    # 少甜：过滤带"甜"标签的甜品与甜饮
+    if ctx.low_sweet:
+        desserts = [d for d in desserts if "甜" not in d.name and "甜" not in d.tags]
+        drinks = [d for d in drinks if "甜" not in d.name and "甜" not in d.tags]
+
+    # 乐园餐甜饮调整提示（方案 note 共用）
+    swap = drink_swap_note(ctx)
+
     # 方案1：全家稳
     best_coupon = find_best_coupon(menu, coupons, ctx.budget)
     scheme1_items = []
@@ -89,7 +97,7 @@ def enumerate_schemes(menu: List[MenuItem], coupons: List[Coupon], ctx: FamilyCt
         items=scheme1_items,
         original_price=scheme1_price,
         final_price=scheme1_final,
-        note="均衡搭配，命中满减"
+        note="均衡搭配，命中满减" + (f"；{swap}" if swap else "")
     ))
 
     # 方案2：孩子开心
@@ -113,7 +121,7 @@ def enumerate_schemes(menu: List[MenuItem], coupons: List[Coupon], ctx: FamilyCt
         items=scheme2_items,
         original_price=scheme2_price,
         final_price=scheme2_final,
-        note="乐园餐优先，孩子满足"
+        note="乐园餐优先，孩子满足" + ("；甜饮保留，可免费换牛奶/苹果片" if ctx.low_sweet else "")
     ))
 
     # 方案3：家长友好（低卡）
@@ -144,10 +152,19 @@ def enumerate_schemes(menu: List[MenuItem], coupons: List[Coupon], ctx: FamilyCt
         items=scheme3_items,
         original_price=scheme3_price,
         final_price=scheme3_final,
-        note="低卡导向，整体更健康"
+        note="低卡导向，整体更健康" + (f"；{swap}" if swap else "")
     ))
 
     return schemes
+
+
+def drink_swap_note(ctx: FamilyCtx) -> str:
+    """乐园餐甜饮调整提示：勾选换奶按已处理，少甜给替换建议"""
+    if ctx.swap_drink_to_milk:
+        return "甜饮已换牛奶"
+    if ctx.low_sweet:
+        return "甜饮建议换牛奶/苹果片（少甜）"
+    return ""
 
 
 def find_best_coupon(menu: List[MenuItem], coupons: List[Coupon], budget: float) -> Optional[Coupon]:
@@ -210,7 +227,8 @@ if __name__ == "__main__":
         Coupon("c2", "满减", 30.0, 5.0, []),
     ]
 
-    ctx = FamilyCtx(adult=2, kid=1, budget=70.0, no_spicy=False, low_sweet=False, must_have_kids_meal=True)
+    # 模拟输入：周末中午，带孩子，两大一小，预算70，少甜，要开心乐园餐
+    ctx = FamilyCtx(adult=2, kid=1, budget=70.0, no_spicy=False, low_sweet=True, must_have_kids_meal=True, swap_drink_to_milk=False)
 
     schemes = enumerate_schemes(sample_menu, sample_coupons, ctx)
     print(output_json(schemes))

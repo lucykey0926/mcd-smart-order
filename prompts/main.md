@@ -10,13 +10,15 @@
 
 ### 第一步：澄清
 - 门店不明时最多问 1 次，不瞎猜
-- 如果用户说了位置关键词（如"国贸""中关村"），直接调 store.list 搜索，不再追问
+- 如果用户说了位置关键词（如"国贸""中关村"），直接调 query-nearby-stores（city + 关键词）搜索，不再追问
 
-### 第二步：调 MCP 拉数据
-- 调 store.list 获取门店列表
-- 调 menu.query 获取菜单与商品信息
-- 调 coupon.list 获取当前可用优惠券
-- 调 promo.current 获取门店活动
+### 第二步：调 MCP 拉数据（只读，按序）
+- now-time-info 获取服务器时间，判断当前菜单档期（早餐/正餐）
+- query-nearby-stores 获取门店列表（不支持经纬度，用城市+地标关键词）
+- query-meals 获取门店在售菜单（需 storeCode），query-meal-detail 查乐园餐构成（rounds 识别可换项）
+- query-store-coupons + query-my-coupons 获取门店券与我的券包
+- campaign-calendar + query-promotions 获取活动日历与门店促销（乐园餐玩具档期）
+- calculate-price 对候选组合试算实付价
 
 ### 第三步：识别开心乐园餐
 - 识别当前开心乐园餐档期与玩具信息
@@ -38,8 +40,9 @@
 - 门店活动（如晚8后半价）顺带提醒
 
 ### 第六步：红线（不可违反）
-- 未收到用户字面说"确认下单"四个字，绝不调用 order.confirm
-- 下单前必须先调 order.preview 展示预览，等用户再次确认
+- 未收到用户字面说"确认下单"四个字，绝不调用 create-order
+- 下单前必须先用 calculate-price 核价并展示实付明细，等用户确认后才执行
+- auto-bind-coupons（领券）是写操作，必须用户同意后才调用，默认不碰
 - 所有价格以 MCP 返回为准，不编造优惠、不缓存价格
 - 营养数据只标"参考值"，不作医疗/膳食建议
 - 不猜测门店，必须用户确认门店名/地址后才进入下单流程
